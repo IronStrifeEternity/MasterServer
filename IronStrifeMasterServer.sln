@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronStrifeMasterServer", "IronStrifeMasterServer\IronStrifeMasterServer.csproj", "{CFC70FA0-24CE-465B-B3F4-9745D5242740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StrifeClientTester", "StrifeClientTester\StrifeClientTester.csproj", "{BD06DB74-A572-4609-A423-2F2171CF1250}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		ClientTest|Any CPU = ClientTest|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.ClientTest|Any CPU.ActiveCfg = ClientTest|Any CPU
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.ClientTest|Any CPU.Build.0 = ClientTest|Any CPU
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFC70FA0-24CE-465B-B3F4-9745D5242740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.ClientTest|Any CPU.ActiveCfg = ClientTest|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.ClientTest|Any CPU.Build.0 = ClientTest|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD06DB74-A572-4609-A423-2F2171CF1250}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
