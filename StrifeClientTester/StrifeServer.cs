@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Net;
+﻿using System.Net;
 using System.Xml.Serialization;
 
-[XmlType("ServerInfo")]
-public class ServerInfo
+public class StrifeServer
 {
     [XmlElement("ipAddress")]
     public string ipAddress;
@@ -19,15 +17,4 @@ public class ServerInfo
     public int numConnectedPlayers;
     [XmlElement("maxPlayers")]
     public int maxPlayers;
-
-    public override string ToString()
-    {
-        return ipAddress + ": " + port + " | " + gameName + " : " + gameDescription + " | Type: " + gametype + " | " + numConnectedPlayers + " / " + maxPlayers;
-    }
-}
-
-[XmlRoot("StrifeServerList")]
-public class StrifeServerList
-{
-    public List<ServerInfo> servers;
 }

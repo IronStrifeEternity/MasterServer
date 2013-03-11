@@ -8,15 +8,6 @@ namespace IronStrifeMasterServer
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            var server = new MasterServer();
-            server.Start();
-            while (server.isRunning)
-            {
 
-            }
-
-        }
     }
 }
