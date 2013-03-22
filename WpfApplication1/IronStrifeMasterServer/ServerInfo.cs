@@ -7,10 +7,13 @@ public class ServerInfo
 {
     [XmlElement("ipAddress")]
     public string ipAddress;
+    public string IpAddress { get { return ipAddress; } }
     [XmlElement("port")]
     public int port;
     [XmlElement("gameName")]
     public string gameName;
+    public string GameName { get { return gameName; } }
+
     [XmlElement("gameType")]
     public string gametype;
     [XmlElement("gameDescription")]

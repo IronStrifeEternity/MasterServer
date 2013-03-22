@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace IronStrifeMasterServer
 {
@@ -16,30 +17,48 @@ namespace IronStrifeMasterServer
     public class MasterServer
     {
         TcpListener listener;
-        List<ServerInfo> servers;
+        ObservableCollection<ServerInfo> servers;
+        public ObservableCollection<ServerInfo> Servers { get { return servers; } }
         public bool isRunning;
+        public delegate void OnMessageEventHandler(string message);
+        public event OnMessageEventHandler OnMessage;
+
+        public ObservableCollection<ServerInfo> ServerList
+        {
+            get
+            {
+                return new ObservableCollection<ServerInfo>(servers);
+            }
+        }
 
         public MasterServer()
         {
             listener = new TcpListener(IPAddress.Any, Globals.listenPort);
-            servers = new List<ServerInfo>();
+            servers = new ObservableCollection<ServerInfo>();
 
         }
 
         /// <summary>
         /// Initializes and begins listening for client connections.
         /// </summary>
-        public void Start()
+        public async void Start()
         {
+            PrintMessage("Starting Master Server.");
             listener.Start();
             isRunning = true;
-            while (true)
+            while (isRunning)
             {
-                Console.WriteLine("Listening...");
-                var client = listener.AcceptTcpClient();
+                var client = await listener.AcceptTcpClientAsync();
                 HandleClientConnection(client);
             }
-            isRunning = false;
+        }
+
+        void PrintMessage(string message)
+        {
+            if (OnMessage != null)
+            {
+                OnMessage(message);
+            }
         }
 
         private void HandleClientConnection(TcpClient client)
@@ -60,7 +79,7 @@ namespace IronStrifeMasterServer
 
         private void InterpretClientRequest(TcpClient client, string data)
         {
-            Console.WriteLine("Interpreting client request: " + data);
+            PrintMessage("Interpreting client request: " + data);
             var words = data.Split(' ');
             RequestType requestType;
             if (Enum.TryParse<RequestType>(words[0], true, out requestType))
@@ -105,7 +124,7 @@ namespace IronStrifeMasterServer
 
         private void TryDeregisterServer(string ipAddress, int port)
         {
-            Console.WriteLine("Trying to deregister server at " + ipAddress + ":" + port);
+            PrintMessage("Trying to deregister server at " + ipAddress + ":" + port);
             ServerInfo serverToDeregister = null;
             foreach (ServerInfo si in servers)
             {
@@ -135,7 +154,7 @@ namespace IronStrifeMasterServer
         /// <param name="server"></param>
         public void RegisterNewServer(ServerInfo server)
         {
-            Console.WriteLine("Registered new server: " + server.ToString());
+            PrintMessage("Registered new server: " + server.ToString());
             servers.Add(server);
         }
 
