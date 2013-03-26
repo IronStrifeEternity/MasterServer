@@ -9,12 +9,12 @@ using System.Text;
 using System.Linq;
 using System.Collections.ObjectModel;
 
-namespace IronStrifeMasterServer
+namespace IronStrife.MasterServer
 {
     /// <summary>
     /// Class handling communication with clients, storing server information, and launching new server instances
     /// </summary>
-    public class MasterServer
+    public class StrifeMasterServer
     {
         TcpListener listener;
         ObservableCollection<ServerInfo> servers;
@@ -31,11 +31,16 @@ namespace IronStrifeMasterServer
             }
         }
 
-        public MasterServer()
+        public StrifeMasterServer()
         {
             listener = new TcpListener(IPAddress.Any, Globals.listenPort);
             servers = new ObservableCollection<ServerInfo>();
 
+        }
+
+        public void Stop()
+        {
+            isRunning = false;
         }
 
         /// <summary>
@@ -51,6 +56,7 @@ namespace IronStrifeMasterServer
                 var client = await listener.AcceptTcpClientAsync();
                 HandleClientConnection(client);
             }
+            listener.Stop();
         }
 
         void PrintMessage(string message)
@@ -205,7 +211,7 @@ namespace IronStrifeMasterServer
 
         static void Main(string[] args)
         {
-            var server = new MasterServer();
+            var server = new StrifeMasterServer();
             server.Start();
         }
     }

@@ -7,8 +7,8 @@
     <ProjectGuid>{027B7A0D-0E3B-4536-875C-EB88ED6F69C7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WpfApplication1</RootNamespace>
-    <AssemblyName>WpfApplication1</AssemblyName>
+    <RootNamespace>IronStrife</RootNamespace>
+    <AssemblyName>IronStrifeBackend</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,10 +34,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>WpfApplication1.App</StartupObject>
+    <StartupObject>IronStrife.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="Alchemy, Version=2.2.0.238, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Visual Studio 2012\Projects\WebSocketApplication\WebSocketApplication\Alchemy\Alchemy.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Json45r11\Bin\Net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="ReachFramework" />
     <Reference Include="System" />
@@ -63,8 +70,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ChatServer\MTObservableCollection.cs" />
     <Compile Include="IronStrifeMasterServer\Globals.cs" />
-    <Compile Include="IronStrifeMasterServer\Program.cs" />
     <Compile Include="IronStrifeMasterServer\ServerInfo.cs" />
     <Compile Include="IronStrifeMasterServer\StrifeServerRequest.cs" />
     <Page Include="MainWindow.xaml">
@@ -82,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IronStrifeMasterServer\MasterServer.cs" />
+    <Compile Include="ChatServer\StrifeChatServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -1,4 +1,4 @@
-﻿namespace IronStrifeMasterServer
+﻿namespace IronStrife.MasterServer
 {
     using System.Net;
     public static class Globals
