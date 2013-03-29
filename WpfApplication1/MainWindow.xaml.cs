@@ -47,6 +47,7 @@ namespace IronStrife
         {
             server.Stop();
             chatServer.Stop();
+            Application.Current.Shutdown(0);
         }
 
 
@@ -66,18 +67,8 @@ namespace IronStrife
         private void SubmitChatInput(string command)
         {
             var split = command.Split(' ');
-            switch (split[0])
-            {
-                case "global":
-                    var message = split.Skip(1);
-                    StringBuilder sb = new StringBuilder();
-                    foreach (string s in message)
-                    {
-                        sb.Append(s + " ");
-                    }
-                    chatServer.SendGlobalChatMessage(sb.ToString());
-                    break;
-            }
+            var com = new ChatCommand() { name = split[0], parameters = split.Skip(1).ToArray() };
+            chatServer.SubmitCommand(com);
         }
 
         private void chatInputSubmitButton_Click(object sender, RoutedEventArgs e)

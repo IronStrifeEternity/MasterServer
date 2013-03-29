@@ -116,6 +116,25 @@ namespace IronStrife.ChatServer
                 c.SendMessage(message);
             }
         }
+
+        internal Connection GetUser(string ipAddress)
+        {
+            var user = OnlineConnections[ipAddress];
+            return user;
+        }
+
+        internal void SubmitCommand(ChatCommand com)
+        {
+            Type t = typeof(ChatCommands);
+            var method = t.GetMethod(com.name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+            if (method != null)
+            {
+                object[] parameters = new object[2];
+                parameters[0] = this;
+                parameters[1] = com.parameters;
+                method.Invoke(null, parameters);
+            }
+        }
     }
 
     public class Connection
@@ -124,6 +143,14 @@ namespace IronStrife.ChatServer
         public void SendMessage(string message)
         {
             Context.Send(message);
+        }
+        /// <summary>
+        /// Forces a disconnect on this user for the given reason.
+        /// </summary>
+        public void ForceDisconnect(string message)
+        {
+            this.SendMessage("You were forcibly disconnected for the following reason: " + message);
+            Context.OnDisconnect();
         }
     }
 }

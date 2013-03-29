@@ -70,8 +70,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ChatServer\ChatCommand.cs" />
+    <Compile Include="ChatServer\ChatCommands.cs" />
     <Compile Include="ChatServer\MTObservableCollection.cs" />
     <Compile Include="IronStrifeMasterServer\Globals.cs" />
+    <Compile Include="IronStrifeMasterServer\PlayerStatRecord.cs" />
     <Compile Include="IronStrifeMasterServer\ServerInfo.cs" />
     <Compile Include="IronStrifeMasterServer\StrifeServerRequest.cs" />
     <Page Include="MainWindow.xaml">

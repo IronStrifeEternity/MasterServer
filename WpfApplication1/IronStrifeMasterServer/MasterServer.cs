@@ -59,6 +59,12 @@ namespace IronStrife.MasterServer
             listener.Stop();
         }
 
+        private XmlSerializer GetXmlSerializer()
+        {
+            Type[] extraTypes = { typeof(GetServerListRequest), typeof(RegisterServerRequest), typeof(DeregisterServerRequest), typeof(SendStatsRequest) };
+            return new XmlSerializer(typeof(StrifeServerRequest), extraTypes);
+        }
+
         void PrintMessage(string message)
         {
             if (OnMessage != null)
@@ -69,63 +75,70 @@ namespace IronStrife.MasterServer
 
         private void HandleClientConnection(TcpClient client)
         {
-            var stream = client.GetStream();
-            var bytes = new byte[256];
-
-            int i;
-            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+            using (var stream = client.GetStream())
             {
-                var data = Encoding.ASCII.GetString(bytes, 0, i);
-                InterpretClientRequest(client, data);
+               // try
+               // {
+                var request = GetXmlSerializer().Deserialize(stream) as StrifeServerRequest;
+                InterpretClientRequest(request);
+                   // var request = new XmlSerializer(typeof(GetServerListRequest)).Deserialize(stream) as StrifeServerRequest;
+                    //InterpretClientRequest(request);
+                //}
+               // catch (Exception e)
+               // {
+                //    PrintMessage("Exception while deserializing a client request: " + e.Message);
+               // }
             }
-
-            stream.Close();
-            client.Close();   // Shutdown and end connection
         }
 
-        private void InterpretClientRequest(TcpClient client, string data)
+        void InterpretClientRequest(StrifeServerRequest request)
         {
-            PrintMessage("Interpreting client request: " + data);
-            var words = data.Split(' ');
-            RequestType requestType;
-            if (Enum.TryParse<RequestType>(words[0], true, out requestType))
-            {
-                switch (requestType)
-                {
-                    case RequestType.GetServerList:
-                        SendServerList(client);
+            PrintMessage("Received request of type: " + request.type);
+        }
 
-                        break;
-                    case RequestType.RegisterServer:
-                        var newServer = new ServerInfo()
-                        {
-                            port = int.Parse(words[1]),
-                            gameName = words[2],
-                            gameDescription = words[3],
-                            gametype = words[4],
-                            ipAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
-                            maxPlayers = 20,
-                            numConnectedPlayers = 0,
+        private void InterpretClientRequest(TcpClient client, string data, byte[] bytes)
+        {
+            //PrintMessage("Interpreting client request: " + data);
 
-                        };
-                        RegisterNewServer(newServer);
-                        break;
-                    case RequestType.DeregisterServer:
-                        int port;
-                        if (int.TryParse(words[1], out port))
-                        {
-                            TryDeregisterServer(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), port);
-                        }
-                        break;
-                    default:
-                        Console.WriteLine("Invalid command: " + data);
-                        break;
-                }
-            }
-            else
-            {
-                WriteStringToClient(client, "Invalid command.");
-            }
+            //RequestType requestType;
+            //if (Enum.TryParse<RequestType>(words[0], true, out requestType))
+            //{
+            //    switch (requestType)
+            //    {
+            //        case RequestType.GetServerList:
+            //            SendServerList(client);
+
+            //            break;
+            //        case RequestType.RegisterServer:
+            //            var newServer = new ServerInfo()
+            //            {
+            //                port = int.Parse(words[1]),
+            //                gameName = words[2],
+            //                gameDescription = words[3],
+            //                gametype = words[4],
+            //                ipAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
+            //                maxPlayers = 20,
+            //                numConnectedPlayers = 0,
+
+            //            };
+            //            RegisterNewServer(newServer);
+            //            break;
+            //        case RequestType.DeregisterServer:
+            //            int port;
+            //            if (int.TryParse(words[1], out port))
+            //            {
+            //                TryDeregisterServer(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), port);
+            //            }
+            //            break;
+            //        default:
+            //            Console.WriteLine("Invalid command: " + data);
+            //            break;
+            //    }
+            //}
+            //else
+            //{
+            //    WriteStringToClient(client, "Invalid command.");
+            //}
         }
 
         private void TryDeregisterServer(string ipAddress, int port)

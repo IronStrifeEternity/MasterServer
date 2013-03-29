@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Xml.Serialization;
+
 namespace IronStrife.MasterServer
 {
+    [Serializable]
     [XmlType("ServerInfo")]
     public class ServerInfo
     {
@@ -30,6 +33,7 @@ namespace IronStrife.MasterServer
         }
     }
 
+    [Serializable]
     [XmlRoot("StrifeServerList")]
     public class StrifeServerList
     {
