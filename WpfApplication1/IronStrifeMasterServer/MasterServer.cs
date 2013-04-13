@@ -8,6 +8,8 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Collections.ObjectModel;
+using System.Xml;
+using System.Reflection;
 
 namespace IronStrife.MasterServer
 {
@@ -59,12 +61,6 @@ namespace IronStrife.MasterServer
             listener.Stop();
         }
 
-        private XmlSerializer GetXmlSerializer()
-        {
-            Type[] extraTypes = { typeof(GetServerListRequest), typeof(RegisterServerRequest), typeof(DeregisterServerRequest), typeof(SendStatsRequest) };
-            return new XmlSerializer(typeof(StrifeServerRequest), extraTypes);
-        }
-
         void PrintMessage(string message)
         {
             if (OnMessage != null)
@@ -73,73 +69,79 @@ namespace IronStrife.MasterServer
             }
         }
 
+        /// <summary>
+        /// Gets all of the subclasses of a given type, using reflection
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static Type[] GetSubclasses<T>()
+        {
+            var allClasses = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(T))).ToArray();
+            return allClasses;
+        }
+
         private void HandleClientConnection(TcpClient client)
         {
             using (var stream = client.GetStream())
             {
-               // try
-               // {
-                var request = GetXmlSerializer().Deserialize(stream) as StrifeServerRequest;
-                InterpretClientRequest(request);
-                   // var request = new XmlSerializer(typeof(GetServerListRequest)).Deserialize(stream) as StrifeServerRequest;
-                    //InterpretClientRequest(request);
-                //}
-               // catch (Exception e)
-               // {
-                //    PrintMessage("Exception while deserializing a client request: " + e.Message);
-               // }
+                // try
+                // {
+                var bytes = new byte[4096];
+                stream.Read(bytes, 0, bytes.Length);
+                var memStream = new MemoryStream(bytes);
+                var textReader = new XmlTextReader(memStream);
+                var data = Encoding.UTF8.GetString(bytes);
+                Type requestType = typeof(StrifeServerRequest);
+                foreach (Type t in GetSubclasses<StrifeServerRequest>())
+                {
+                    if (data.Contains(t.Name))
+                    {
+                        Debug.Print("Match found: " + t.Name);
+                        requestType = t;
+                        break;
+                    }
+                }
+
+                var request = new XmlSerializer(requestType).Deserialize(textReader) as StrifeServerRequest;
+                InterpretClientRequest(request, client);
+
             }
         }
 
-        void InterpretClientRequest(StrifeServerRequest request)
+        private void InterpretClientRequest(StrifeServerRequest request, TcpClient client)
         {
-            PrintMessage("Received request of type: " + request.type);
+            PrintMessage("Interpreting client request: " + request.type);
+
+            string requestType = request.type;
+            switch (requestType)
+            {
+                case "GetServerList":
+                    SendServerList(client);
+
+                    break;
+                case "RegisterServer":
+                    var newServer = ((RegisterServerRequest)request).serverInfo;
+                    newServer.ipAddress = client.Client.RemoteEndPoint.ToString().Split(':')[0];
+                    RegisterNewServer(newServer);
+                    break;
+                case "DeregisterServer":
+                    int port = ((DeregisterServerRequest)request).port;
+                    TryDeregisterServer(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), port);
+                    break;
+                case "SendStats":
+                    HandleStatsRequest((SendStatsRequest)request);
+                    break;
+                default:
+                    WriteStringToClient(client, "Invalid command.");
+                    break;
+            }
         }
 
-        private void InterpretClientRequest(TcpClient client, string data, byte[] bytes)
+        private void HandleStatsRequest(SendStatsRequest sendStatsRequest)
         {
-            //PrintMessage("Interpreting client request: " + data);
-
-            //RequestType requestType;
-            //if (Enum.TryParse<RequestType>(words[0], true, out requestType))
-            //{
-            //    switch (requestType)
-            //    {
-            //        case RequestType.GetServerList:
-            //            SendServerList(client);
-
-            //            break;
-            //        case RequestType.RegisterServer:
-            //            var newServer = new ServerInfo()
-            //            {
-            //                port = int.Parse(words[1]),
-            //                gameName = words[2],
-            //                gameDescription = words[3],
-            //                gametype = words[4],
-            //                ipAddress = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(),
-            //                maxPlayers = 20,
-            //                numConnectedPlayers = 0,
-
-            //            };
-            //            RegisterNewServer(newServer);
-            //            break;
-            //        case RequestType.DeregisterServer:
-            //            int port;
-            //            if (int.TryParse(words[1], out port))
-            //            {
-            //                TryDeregisterServer(((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString(), port);
-            //            }
-            //            break;
-            //        default:
-            //            Console.WriteLine("Invalid command: " + data);
-            //            break;
-            //    }
-            //}
-            //else
-            //{
-            //    WriteStringToClient(client, "Invalid command.");
-            //}
+            PrintMessage("Not supported yet: SendStatsRequest.");
         }
+
 
         private void TryDeregisterServer(string ipAddress, int port)
         {
@@ -156,6 +158,10 @@ namespace IronStrife.MasterServer
             if (serverToDeregister != null)
             {
                 servers.Remove(serverToDeregister);
+            }
+            else
+            {
+                PrintMessage("Error: Couldn't find server to deregister: " + ipAddress + " : " + port);
             }
         }
 

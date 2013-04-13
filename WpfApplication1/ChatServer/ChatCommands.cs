@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Linq;
+using IronStrife.MasterServer;
 
 namespace IronStrife.ChatServer
 {
@@ -44,6 +45,14 @@ namespace IronStrife.ChatServer
             }
             var totalMessage = sb.ToString();
             user.SendMessage(totalMessage);
+        }
+
+        static void Serialize(StrifeChatServer server, string[] parameters)
+        {
+            var bytes = Encoding.UTF8.GetBytes(@"<?xml version=""1.0"" encoding=""Windows-1252/""?><RegisterServerRequest xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" type=""RegisterServer"">  <serverInfo>    <port>25000</port>    <gameName>Enter game name here</gameName>    <gameType>DefaultGameType</gameType>    <gameDescription>Enter game description</gameDescription>    <numConnectedPlayers>0</numConnectedPlayers>    <maxPlayers>0</maxPlayers>  </serverInfo></RegisterServerRequest>");
+            var memStream = new System.IO.MemoryStream(bytes);
+            var obj = new System.Xml.Serialization.XmlSerializer(typeof(StrifeServerRequest)).Deserialize(memStream) as StrifeServerRequest;
+            server.AddToConsoleLog(obj.type);
         }
     }
 }
