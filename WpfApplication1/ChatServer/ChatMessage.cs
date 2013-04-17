@@ -43,5 +43,10 @@ namespace IronStrife.ChatServer
         {
             return "userleft\n" + connection.username + "\n" + connection.userId;
         }
+
+        internal static string MatchFoundMessage(MasterServer.ServerInfo server)
+        {
+            return string.Format("matchfound\n{0}\n{1}", server.IpAddress, server.port);
+        }
     }
 }

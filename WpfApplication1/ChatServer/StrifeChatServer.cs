@@ -23,6 +23,7 @@ namespace IronStrife.ChatServer
         public ChatRoomCollection chatRooms;
 
         private WebSocketServer aServer;
+        private Matchmaking.Matchmaker matchmaker;
 
         private List<Party> parties = new List<Party>();
 
@@ -43,6 +44,8 @@ namespace IronStrife.ChatServer
             chatRooms = new ChatRoomCollection();
             chatRooms.Add(new ChatRoom("US Public Chat"));
             aServer.Start();
+
+            matchmaker = new Matchmaking.Matchmaker();
 
         }
 
@@ -112,10 +115,26 @@ namespace IronStrife.ChatServer
                 case "acceptinvite":
                     HandleAcceptInvite(parameters, connection);
                     break;
+                case "joinMatchmaking":
+                    HandleJoinMatchmaking(parameters, connection);
+                    break;
+                case "stopMatchmaking":
+                    HandleStopMatchmaking(parameters, connection);
+                    break;
                 default:
                     AddToConsoleLog("Invalid command received from " + context.ClientAddress.ToString() + ": " + message);
                     break;
             }
+        }
+
+        private void HandleStopMatchmaking(string[] parameters, Connection connection)
+        {
+            matchmaker.RemoveUserFromQueue(connection);
+        }
+
+        private void HandleJoinMatchmaking(string[] parameters, Connection connection)
+        {
+            matchmaker.AddUserToQueue(connection);
         }
 
         private void HandleAcceptInvite(string[] parameters, Connection connection)

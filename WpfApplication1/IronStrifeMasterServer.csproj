@@ -51,6 +51,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Printing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -76,10 +77,12 @@
     <Compile Include="ChatServer\Party.cs" />
     <Compile Include="ChatServer\ChatRoom.cs" />
     <Compile Include="ChatServer\MTObservableCollection.cs" />
-    <Compile Include="IronStrifeMasterServer\Globals.cs" />
-    <Compile Include="IronStrifeMasterServer\PlayerStatRecord.cs" />
-    <Compile Include="IronStrifeMasterServer\ServerInfo.cs" />
-    <Compile Include="IronStrifeMasterServer\StrifeServerRequest.cs" />
+    <Compile Include="Util.cs" />
+    <Compile Include="MasterServer\Globals.cs" />
+    <Compile Include="MasterServer\PlayerStatRecord.cs" />
+    <Compile Include="MasterServer\ServerInfo.cs" />
+    <Compile Include="MasterServer\Launcher.cs" />
+    <Compile Include="MasterServer\StrifeServerRequest.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -94,8 +97,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IronStrifeMasterServer\MasterServer.cs" />
+    <Compile Include="MasterServer\MasterServer.cs" />
     <Compile Include="ChatServer\StrifeChatServer.cs" />
+    <Compile Include="Matchmaking\Matchmaker.cs" />
+    <Compile Include="Matchmaking\MatchmakingEntity.cs" />
+    <Compile Include="Matchmaking\MatchmakingParty.cs" />
+    <Compile Include="Matchmaking\SoloPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -54,5 +54,10 @@ namespace IronStrife.ChatServer
             var obj = new System.Xml.Serialization.XmlSerializer(typeof(StrifeServerRequest)).Deserialize(memStream) as StrifeServerRequest;
             server.AddToConsoleLog(obj.type);
         }
+
+        static void Launch(StrifeChatServer server, string[] parameters)
+        {
+            Launcher.LaunchServer();
+        }
     }
 }
