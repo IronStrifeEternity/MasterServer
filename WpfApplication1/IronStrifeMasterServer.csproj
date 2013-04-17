@@ -73,6 +73,7 @@
     <Compile Include="ChatServer\ChatCommand.cs" />
     <Compile Include="ChatServer\ChatCommands.cs" />
     <Compile Include="ChatServer\ChatMessage.cs" />
+    <Compile Include="ChatServer\Party.cs" />
     <Compile Include="ChatServer\ChatRoom.cs" />
     <Compile Include="ChatServer\MTObservableCollection.cs" />
     <Compile Include="IronStrifeMasterServer\Globals.cs" />

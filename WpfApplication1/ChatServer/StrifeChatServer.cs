@@ -24,6 +24,8 @@ namespace IronStrife.ChatServer
 
         private WebSocketServer aServer;
 
+        private List<Party> parties = new List<Party>();
+
         public void Start()
         {
             // instantiate a new server - acceptable port and IP range,
@@ -54,33 +56,31 @@ namespace IronStrife.ChatServer
         {
             AddToConsoleLog("Client Connected From : " + aContext.ClientAddress.ToString());
 
-            // Create a new Connection Object to save client context information
+            // Create a new Connection object to save client context information
             var conn = new Connection { Context = aContext };
 
-            // Add a connection Object to thread-safe collection
+            // Add a Connection object to thread-safe collection
             this.OnlineConnections.TryAdd(aContext.ClientAddress.ToString(), conn);
             this.ConnectedUsers.Add(aContext.ClientAddress.ToString());
         }
 
         internal void AddToConsoleLog(string message)
         {
-
             ConsoleLogs.Add(message);
         }
 
 
         public void OnReceive(UserContext aContext)
         {
-            try
-            {
+            //try
+            //{
                 AddToConsoleLog("Data Received From [" + aContext.ClientAddress.ToString() + "] - " + aContext.DataFrame.ToString());
                 HandleMessage(aContext.DataFrame.ToString(), aContext);
-            }
-            catch (Exception ex)
-            {
-                AddToConsoleLog(ex.Message.ToString());
-            }
-
+            //}
+            //catch (Exception ex)
+            //{
+            //    AddToConsoleLog(ex.Message.ToString());
+            //}
         }
 
         private void HandleMessage(string message, UserContext context)
@@ -95,7 +95,7 @@ namespace IronStrife.ChatServer
             switch (words[0])
             {
                 case "chat":
-                    HandleChatMessage(connection, parameters, GetRoom(connection));
+                    HandleChatMessage(connection, parameters, connection.CurrentRoom);
                     break;
                 case "joinroom":
                     HandleJoinRoom(parameters, connection);
@@ -106,10 +106,40 @@ namespace IronStrife.ChatServer
                 case "setusername":
                     HandleSetUsername(parameters, connection);
                     break;
+                case "invite":
+                    HandleInvite(parameters, connection);
+                    break;
+                case "acceptinvite":
+                    HandleAcceptInvite(parameters, connection);
+                    break;
                 default:
                     AddToConsoleLog("Invalid command received from " + context.ClientAddress.ToString() + ": " + message);
                     break;
             }
+        }
+
+        private void HandleAcceptInvite(string[] parameters, Connection connection)
+        {
+            var inviter = GetConnectionByUsername(parameters[0]);
+            var party = inviter.party;
+            if (party == null)
+            {
+                party = new Party();
+                parties.Add(party);
+                MoveUserToRoom(inviter, party.room);
+                party.AddToParty(inviter);                
+            }
+
+            // Add user to party and move him into the chat room.
+            MoveUserToRoom(connection, party.room);
+            party.AddToParty(connection);            
+
+        }
+
+        private void HandleInvite(string[] parameters, Connection connection)
+        {
+            var userToInvite = GetConnectionByUsername(parameters[0]);
+            userToInvite.SendMessage(ChatMessage.InvitationMessage(connection.username, connection.userId));
         }
 
         private void HandleJoinRoom(string[] parameters, Connection connection)
@@ -134,12 +164,8 @@ namespace IronStrife.ChatServer
                 connection.CurrentRoom.RemoveClient(connection);
             }
             room.AddClient(connection);
-            connection.CurrentRoom = room;
-            connection.SendMessage(ChatMessage.RoomChangedMessage(room));
-            foreach (Connection conn in room.ClientsInRoom)
-            {
-                connection.SendMessage(ChatMessage.UserJoinedRoomMessage(conn));
-            }
+
+
         }
 
         private void HandleSetUsername(string[] parameters, Connection connection)
@@ -171,18 +197,6 @@ namespace IronStrife.ChatServer
             foreach (ChatRoom room in chatRooms)
             {
                 if (room.ClientsInRoom.Contains(conn))
-                {
-                    return room;
-                }
-            }
-            return null;
-        }
-
-        private ChatRoom GetRoom(Connection connection)
-        {
-            foreach (ChatRoom room in chatRooms)
-            {
-                if (room.ClientsInRoom.Contains(connection))
                 {
                     return room;
                 }
@@ -243,11 +257,11 @@ namespace IronStrife.ChatServer
             OnlineConnections.TryRemove(aContext.ClientAddress.ToString(), out conn);
             ConnectedUsers.Remove(aContext.ClientAddress.ToString());
             var room = conn.CurrentRoom;
-            room.RemoveClient(conn);
+            if (room != null)
+            {
+                room.RemoveClient(conn);
+            }
         }
-
-
-
 
         internal void Stop()
         {
@@ -262,10 +276,26 @@ namespace IronStrife.ChatServer
             }
         }
 
-        internal Connection GetUser(string ipAddress)
+        internal Connection GetConnection(string ipAddress)
         {
             var user = OnlineConnections[ipAddress];
             return user;
+        }
+        private Connection GetConnection(UserContext context)
+        {
+            foreach (Connection conn in OnlineConnections.Values)
+            {
+                if (conn.Context == context)
+                {
+                    return conn;
+                }
+            }
+            return null;
+        }
+        internal Connection GetConnectionByUsername(string username)
+        {
+            var user = OnlineConnections.Single((c) => c.Value.username == username);
+            return user.Value;
         }
 
         internal void SubmitCommand(ChatCommand com)
@@ -288,18 +318,6 @@ namespace IronStrife.ChatServer
                 }
             }
         }
-
-        private Connection GetConnection(UserContext context)
-        {
-            foreach (Connection conn in OnlineConnections.Values)
-            {
-                if (conn.Context == context)
-                {
-                    return conn;
-                }
-            }
-            return null;
-        }
     }
 
     public class Connection
@@ -316,6 +334,10 @@ namespace IronStrife.ChatServer
         /// The IronStrife username associated with this connection.
         /// </summary>
         public string username;
+        /// <summary>
+        /// The current matchmaking party this user is a member of.
+        /// </summary>
+        public Party party;
 
         public ChatRoom CurrentRoom { get; set; }
 

@@ -9,8 +9,7 @@ namespace IronStrife.ChatServer
     public class ChatRoom
     {
         public string Name { get; set; }
-        private int maxConnections = defaultMaxConnections;
-        const int defaultMaxConnections = 100;
+
         private List<Connection> clientsInRoom = new List<Connection>();
         public List<Connection> ClientsInRoom
         {
@@ -25,14 +24,27 @@ namespace IronStrife.ChatServer
             this.Name = name;
         }
 
-        internal void AddClient(Connection conn)
+        internal void AddClient(Connection newConnection)
         {
-            this.clientsInRoom.Add(conn);
+            newConnection.SendMessage(ChatMessage.RoomChangedMessage(this));
+            foreach (Connection conn in this.clientsInRoom)
+            {
+                conn.SendMessage(ChatMessage.UserJoinedRoomMessage(newConnection));
+                newConnection.SendMessage(ChatMessage.UserJoinedRoomMessage(conn));
+            }
+            newConnection.SendMessage(ChatMessage.UserJoinedRoomMessage(newConnection));
+
+            this.clientsInRoom.Add(newConnection);
+            newConnection.CurrentRoom = this;
         }
 
         internal void RemoveClient(Connection connection)
         {
             this.clientsInRoom.Remove(connection);
+            foreach (Connection conn in this.clientsInRoom)
+            {
+                conn.SendMessage(ChatMessage.UserLeftRoomMessage(connection));
+            }
         }
     }
 

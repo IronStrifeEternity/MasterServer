@@ -23,5 +23,25 @@ namespace IronStrife.ChatServer
         {
             return "chatmessage\n" + username + "\n" + userid + "\n" + message;
         }
+
+        internal static string InvitationMessage(string inviter, int inviterId)
+        {
+            return "invitation\n" + inviter + "\n" + inviterId;
+        }
+
+        internal static string UserJoinedPartyMessage(Connection connection)
+        {
+            return "partyjoined\n" + connection.username + "\n" + connection.userId;
+        }
+
+        internal static string PartyChangedMessage()
+        {
+            return "partychanged";
+        }
+
+        internal static string UserLeftRoomMessage(Connection connection)
+        {
+            return "userleft\n" + connection.username + "\n" + connection.userId;
+        }
     }
 }

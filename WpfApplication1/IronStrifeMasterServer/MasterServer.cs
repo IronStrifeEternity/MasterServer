@@ -84,27 +84,32 @@ namespace IronStrife.MasterServer
         {
             using (var stream = client.GetStream())
             {
-                // try
-                // {
-                var bytes = new byte[4096];
-                stream.Read(bytes, 0, bytes.Length);
-                var memStream = new MemoryStream(bytes);
-                var textReader = new XmlTextReader(memStream);
-                var data = Encoding.UTF8.GetString(bytes);
-                Type requestType = typeof(StrifeServerRequest);
-                foreach (Type t in GetSubclasses<StrifeServerRequest>())
+                try
                 {
-                    if (data.Contains(t.Name))
+                    var bytes = new byte[4096];
+                    stream.Read(bytes, 0, bytes.Length);
+                    var memStream = new MemoryStream(bytes);
+                    var textReader = new XmlTextReader(memStream);
+                    var data = Encoding.UTF8.GetString(bytes);
+                    Type requestType = typeof(StrifeServerRequest);
+                    foreach (Type t in GetSubclasses<StrifeServerRequest>())
                     {
-                        Debug.Print("Match found: " + t.Name);
-                        requestType = t;
-                        break;
+                        if (data.Contains(t.Name))
+                        {
+                            Debug.Print("Match found: " + t.Name);
+                            requestType = t;
+                            break;
+                        }
                     }
+
+                    var request = new XmlSerializer(requestType).Deserialize(textReader) as StrifeServerRequest;
+                    InterpretClientRequest(request, client);
+
                 }
-
-                var request = new XmlSerializer(requestType).Deserialize(textReader) as StrifeServerRequest;
-                InterpretClientRequest(request, client);
-
+                catch (Exception e)
+                {
+                    this.PrintMessage("Exception: " + e.Message);
+                }
             }
         }
 

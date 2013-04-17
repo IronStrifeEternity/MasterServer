@@ -24,7 +24,7 @@ namespace IronStrife.ChatServer
 
         static void Kick(StrifeChatServer server, string[] parameters)
         {
-            var userToKick = server.GetUser(parameters[0]);
+            var userToKick = server.GetConnection(parameters[0]);
             if (userToKick == null) return;
             StringBuilder sb = new StringBuilder();
             foreach (string s in parameters.Skip(1))
@@ -37,7 +37,7 @@ namespace IronStrife.ChatServer
 
         static void Whisper(StrifeChatServer server, string[] parameters)
         {
-            var user = server.GetUser(parameters[0]);
+            var user = server.GetConnection(parameters[0]);
             StringBuilder sb = new StringBuilder();
             foreach (string s in parameters.Skip(1))
             {
