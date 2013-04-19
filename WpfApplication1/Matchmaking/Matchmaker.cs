@@ -102,8 +102,8 @@ namespace IronStrife.Matchmaking
         private void TryFindMatch()
         {
             Console.WriteLine("Trying to find a match.");
-            if (TotalQueuedUsers > 2)
-                MakeMatch(usersInQueue);
+            if (TotalQueuedUsers >= 2)
+                MakeMatch(new List<MatchmakingEntity>(usersInQueue));
         }
 
         private void MakeMatch(List<MatchmakingEntity> users)
@@ -111,7 +111,7 @@ namespace IronStrife.Matchmaking
             var server = Launcher.LaunchServer();
             foreach (MatchmakingEntity entity in users)
             {
-                entity.SendMessage(ChatMessage.MatchFoundMessage(server));
+                entity.SendMessage(ChatMessage.MatchFoundMessage(server, 1));
                 RemoveEntityFromQueue(entity);
             }
         }

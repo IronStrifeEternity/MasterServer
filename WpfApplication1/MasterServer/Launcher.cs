@@ -29,8 +29,7 @@ namespace IronStrife.MasterServer
                 fileName = @"C:\Users\Eric\Desktop\TestBuild\test.exe";
             }
             startInfo.FileName = fileName;
-            startInfo.Arguments = "-batchmode StartHeadlessServer " + gameName + " " + description + " " + portNumber;
-            startInfo.Arguments = String.Format("-batchmode StartHeadlessServer {0} {1} {2}", portNumber, gameName, description);
+            startInfo.Arguments = String.Format("batchmode StartHeadlessServer {0} {1} {2}", portNumber, gameName, description);
             try
             {
                 var process = Process.Start(startInfo);

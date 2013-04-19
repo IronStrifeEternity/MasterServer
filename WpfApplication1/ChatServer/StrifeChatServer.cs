@@ -115,10 +115,10 @@ namespace IronStrife.ChatServer
                 case "acceptinvite":
                     HandleAcceptInvite(parameters, connection);
                     break;
-                case "joinMatchmaking":
+                case "joinmatchmaking":
                     HandleJoinMatchmaking(parameters, connection);
                     break;
-                case "stopMatchmaking":
+                case "stopmatchmaking":
                     HandleStopMatchmaking(parameters, connection);
                     break;
                 default:
