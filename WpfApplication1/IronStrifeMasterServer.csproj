@@ -42,6 +42,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Visual Studio 2012\Projects\WebSocketApplication\WebSocketApplication\Alchemy\Alchemy.dll</HintPath>
     </Reference>
+    <Reference Include="MySql.Data, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="MySql.Data.Entity, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
+    <Reference Include="MySql.Web, Version=6.6.5.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\..\Json45r11\Bin\Net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -77,6 +80,7 @@
     <Compile Include="ChatServer\Party.cs" />
     <Compile Include="ChatServer\ChatRoom.cs" />
     <Compile Include="ChatServer\MTObservableCollection.cs" />
+    <Compile Include="Matchmaking\StrifeDB.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="MasterServer\Globals.cs" />
     <Compile Include="MasterServer\PlayerStatRecord.cs" />
