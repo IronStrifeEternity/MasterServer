@@ -27,9 +27,28 @@ namespace IronStrife.MasterServer
         [XmlElement("maxPlayers")]
         public int maxPlayers;
 
+        [XmlIgnore]
+        public int averageSkillRating = 100;
+
         public override string ToString()
         {
             return ipAddress + ": " + port + " | " + gameName + " : " + gameDescription + " | Type: " + gametype + " | " + numConnectedPlayers + " / " + maxPlayers;
+        }
+
+        internal void AddPlayer(int skillRating)
+        {
+            var oldTotalSkill = numConnectedPlayers * averageSkillRating;
+            var newTotalSkill = oldTotalSkill + skillRating;
+            numConnectedPlayers++;
+            this.averageSkillRating = newTotalSkill / numConnectedPlayers;
+        }
+
+        internal void RemovePlayer(int skillRating)
+        {
+            var oldTotalSkill = numConnectedPlayers * averageSkillRating;
+            var newTotalSkill = oldTotalSkill - skillRating;
+            numConnectedPlayers--;
+            this.averageSkillRating = newTotalSkill / numConnectedPlayers;
         }
     }
 

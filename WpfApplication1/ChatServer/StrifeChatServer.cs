@@ -280,6 +280,8 @@ namespace IronStrife.ChatServer
             {
                 room.RemoveClient(conn);
             }
+
+            matchmaker.RemoveUserFromQueue(GetConnection(aContext));
         }
 
         internal void Stop()
