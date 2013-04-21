@@ -203,6 +203,7 @@ namespace IronStrife.ChatServer
             if (int.TryParse(parameters[0], out userId))
             {
                 connection.userId = userId;
+                var skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(userId);
             }
             else
             {
@@ -357,6 +358,10 @@ namespace IronStrife.ChatServer
         /// The current matchmaking party this user is a member of.
         /// </summary>
         public Party party;
+        /// <summary>
+        /// The matchmaking skill rating associated with this connection.
+        /// </summary>
+        public int skillRating;
 
         public ChatRoom CurrentRoom { get; set; }
 
