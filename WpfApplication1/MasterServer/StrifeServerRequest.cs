@@ -55,4 +55,24 @@ namespace IronStrife.MasterServer
             this.type = "SendStats";
         }
     }
+
+    public class PlayerJoinedRequest : StrifeServerRequest
+    {
+        public int serverPort;
+        public int userId;
+        public PlayerJoinedRequest()
+        {
+            this.type = "PlayerJoined";
+        }
+    }
+
+    public class PlayerLeftRequest : StrifeServerRequest
+    {
+        public int serverPort;
+        public int userId;
+        public PlayerLeftRequest()
+        {
+            this.type = "PlayerLeft";
+        }
+    }
 }

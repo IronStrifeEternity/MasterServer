@@ -33,8 +33,16 @@ namespace IronStrife.Matchmaking
                 return;
             }
 
-            var entity = new SoloPlayer(connection);
-            usersInQueue.Add(entity);
+            if (connection.party != null)
+            {
+                AddPartyToQueue(connection.party);
+            }
+            else
+            {
+                var entity = new SoloPlayer(connection);
+                usersInQueue.Add(entity);
+            }
+
             TryFindMatch();
         }
         public void AddPartyToQueue(Party party)
@@ -52,6 +60,11 @@ namespace IronStrife.Matchmaking
 
         public void RemoveUserFromQueue(Connection connection)
         {
+            if (connection.party != null)
+            {
+                RemovePartyFromQueue(connection.party);
+            }
+
             SoloPlayer entity = GetSoloPlayer(usersInQueue, connection);
             if (entity != null)
             {
@@ -104,6 +117,8 @@ namespace IronStrife.Matchmaking
             Console.WriteLine("Trying to find a match.");
             if (TotalQueuedUsers >= 2)
                 MakeMatch(new List<MatchmakingEntity>(usersInQueue));
+
+            usersInQueue.ForEach((m) => m.IncrementSkillThreshold(5));
         }
 
         private void MakeMatch(List<MatchmakingEntity> users)

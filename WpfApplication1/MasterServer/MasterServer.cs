@@ -136,10 +136,31 @@ namespace IronStrife.MasterServer
                 case "SendStats":
                     HandleStatsRequest((SendStatsRequest)request);
                     break;
+                case "PlayerJoined":
+                    HandlePlayerJoinedRequest((PlayerJoinedRequest)request, client);
+                    break;
+                case "PlayerLeft":
+                    HandlePlayerLeftRequest((PlayerLeftRequest)request, client);
+                    break;
+
                 default:
                     WriteStringToClient(client, "Invalid command.");
                     break;
             }
+        }
+
+        private void HandlePlayerLeftRequest(PlayerLeftRequest playerLeftRequest, TcpClient client)
+        {
+            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString() && si.port == playerLeftRequest.serverPort));
+            var skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(playerLeftRequest.userId);
+            server.RemovePlayer(skillRating);
+        }
+
+        private void HandlePlayerJoinedRequest(PlayerJoinedRequest playerJoinedRequest, TcpClient client)
+        {
+            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString() && si.port == playerJoinedRequest.serverPort));
+            var skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(playerJoinedRequest.userId);
+            server.AddPlayer(skillRating);
         }
 
         private void HandleStatsRequest(SendStatsRequest sendStatsRequest)
