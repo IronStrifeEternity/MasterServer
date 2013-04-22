@@ -26,16 +26,19 @@ namespace IronStrife.Matchmaking
                 if (reader.Read())
                 {
                     var val = reader.GetInt32("skillRating");
+                    dbConn.Close();
                     return val;
                 }
                 else
                 {
+                    dbConn.Close();
                     return defaultValue;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
+                dbConn.Close();
                 return defaultValue;
             }
         }
