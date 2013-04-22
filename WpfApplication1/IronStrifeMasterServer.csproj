@@ -80,6 +80,7 @@
     <Compile Include="ChatServer\Party.cs" />
     <Compile Include="ChatServer\ChatRoom.cs" />
     <Compile Include="ChatServer\MTObservableCollection.cs" />
+    <Compile Include="Matchmaking\Matchup.cs" />
     <Compile Include="Matchmaking\StrifeDB.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="MasterServer\Globals.cs" />

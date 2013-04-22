@@ -14,6 +14,7 @@ namespace IronStrife.MasterServer
         public string IpAddress { get { return ipAddress; } }
         [XmlElement("port")]
         public int port;
+        public string Port { get { return port.ToString(); } }
         [XmlElement("gameName")]
         public string gameName;
         public string GameName { get { return gameName; } }
@@ -24,9 +25,11 @@ namespace IronStrife.MasterServer
         public string gameDescription;
         [XmlElement("numConnectedPlayers")]
         public int numConnectedPlayers;
+        public string NumConnectedPlayers { get { return numConnectedPlayers.ToString(); } }
         [XmlElement("maxPlayers")]
         public int maxPlayers;
 
+        public string SkillRating { get { return averageSkillRating.ToString(); } }
         [XmlIgnore]
         public int averageSkillRating = 100;
 
@@ -48,7 +51,10 @@ namespace IronStrife.MasterServer
             var oldTotalSkill = numConnectedPlayers * averageSkillRating;
             var newTotalSkill = oldTotalSkill - skillRating;
             numConnectedPlayers--;
-            this.averageSkillRating = newTotalSkill / numConnectedPlayers;
+            if (numConnectedPlayers == 0)
+                averageSkillRating = 100;
+            else
+                this.averageSkillRating = newTotalSkill / numConnectedPlayers;
         }
     }
 

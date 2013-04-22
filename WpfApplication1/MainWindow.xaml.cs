@@ -28,8 +28,8 @@ namespace IronStrife
             chatServer = new StrifeChatServer();
             listOfConnectedChatUsers.ItemsSource = chatServer.ConnectedUsers;
             chatPanelOutput.ItemsSource = chatServer.ConsoleLogs;
+            chatServer.masterServer = server;
             chatServer.Start();
-
             this.Closed += MainWindow_Closed;
         }
 

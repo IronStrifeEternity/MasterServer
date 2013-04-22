@@ -2,7 +2,7 @@
 {
     using IronStrife.ChatServer;
     using System.Collections.Generic;
-
+    using System.Linq;
     public class MatchmakingParty : MatchmakingEntity
     {
         internal Party party;
@@ -20,6 +20,11 @@
         public override int NumberOfUsers
         {
             get { return party.Users.Count; }
+        }
+
+        public override int SkillRating
+        {
+            get { return party.Users.Sum((u) => u.skillRating) / party.Users.Count; }
         }
     }
 }

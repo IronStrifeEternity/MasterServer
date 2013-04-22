@@ -11,6 +11,10 @@
                         <GridView>
                             <GridViewColumn Width="140" Header="Game Name" DisplayMemberBinding="{Binding GameName}"  />
                             <GridViewColumn Width="140" Header="IP Address" DisplayMemberBinding="{Binding IpAddress}" />
+                            <GridViewColumn Width="140" Header="Port" DisplayMemberBinding="{Binding Port}" />
+                            <GridViewColumn Width="140" Header="# Players" DisplayMemberBinding="{Binding NumConnectedPlayers}" />
+                            <GridViewColumn Width="140" Header="Skill Rating" DisplayMemberBinding="{Binding SkillRating}" />
+
                         </GridView>
                     </ListView.View>
                 </ListView>
