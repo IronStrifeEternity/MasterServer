@@ -46,7 +46,7 @@ namespace IronStrife.ChatServer
 
         internal static string MatchFoundMessage(MasterServer.ServerInfo server, int teamNumber)
         {
-            return string.Format("matchfound\n{0}\n{1}\n{2}", server.IpAddress, server.port, 1);
+            return string.Format("matchfound\n{0}\n{1}\n{2}", server.IpAddress, server.port, teamNumber);
         }
     }
 }

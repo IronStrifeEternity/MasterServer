@@ -151,16 +151,19 @@ namespace IronStrife.MasterServer
 
         private void HandlePlayerLeftRequest(PlayerLeftRequest playerLeftRequest, TcpClient client)
         {
-            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString() && si.port == playerLeftRequest.serverPort));
+            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString().Split(':')[0] && si.port == playerLeftRequest.serverPort));
             var skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(playerLeftRequest.userId);
             server.RemovePlayer(skillRating);
+            this.PrintMessage("The new average skill rating is " + server.averageSkillRating);
         }
 
         private void HandlePlayerJoinedRequest(PlayerJoinedRequest playerJoinedRequest, TcpClient client)
         {
-            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString() && si.port == playerJoinedRequest.serverPort));
+            ServerInfo server = servers.Single((si) => (si.ipAddress == client.Client.RemoteEndPoint.ToString().Split(':')[0] && si.port == playerJoinedRequest.serverPort));
             var skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(playerJoinedRequest.userId);
             server.AddPlayer(skillRating);
+            this.PrintMessage("The new average skill rating is " + server.averageSkillRating);
+
         }
 
         private void HandleStatsRequest(SendStatsRequest sendStatsRequest)

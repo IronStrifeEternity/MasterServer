@@ -27,6 +27,8 @@ namespace IronStrife.ChatServer
 
         private List<Party> parties = new List<Party>();
 
+        internal IronStrife.MasterServer.StrifeMasterServer masterServer;
+
         public void Start()
         {
             // instantiate a new server - acceptable port and IP range,
@@ -37,15 +39,15 @@ namespace IronStrife.ChatServer
                 OnReceive = OnReceive,
                 OnSend = OnSend,
                 OnConnected = OnConnect,
-                OnDisconnect = OnDisconnect,
+                OnDisconnect = OnDisconnect, 
                 TimeOut = new TimeSpan(0, 5, 0)
+                
             };
-
             chatRooms = new ChatRoomCollection();
             chatRooms.Add(new ChatRoom("US Public Chat"));
             aServer.Start();
 
-            matchmaker = new Matchmaking.Matchmaker();
+            matchmaker = new Matchmaking.Matchmaker(masterServer);
 
         }
 
@@ -77,8 +79,8 @@ namespace IronStrife.ChatServer
         {
             //try
             //{
-                AddToConsoleLog("Data Received From [" + aContext.ClientAddress.ToString() + "] - " + aContext.DataFrame.ToString());
-                HandleMessage(aContext.DataFrame.ToString(), aContext);
+            AddToConsoleLog("Data Received From [" + aContext.ClientAddress.ToString() + "] - " + aContext.DataFrame.ToString());
+            HandleMessage(aContext.DataFrame.ToString(), aContext);
             //}
             //catch (Exception ex)
             //{
@@ -146,12 +148,12 @@ namespace IronStrife.ChatServer
                 party = new Party();
                 parties.Add(party);
                 MoveUserToRoom(inviter, party.room);
-                party.AddToParty(inviter);                
+                party.AddToParty(inviter);
             }
 
             // Add user to party and move him into the chat room.
             MoveUserToRoom(connection, party.room);
-            party.AddToParty(connection);            
+            party.AddToParty(connection);
 
         }
 
@@ -203,6 +205,8 @@ namespace IronStrife.ChatServer
             if (int.TryParse(parameters[0], out userId))
             {
                 connection.userId = userId;
+                connection.skillRating = IronStrife.Matchmaking.StrifeDB.GetSkillLevel(userId);
+
             }
             else
             {
@@ -273,15 +277,17 @@ namespace IronStrife.ChatServer
 
             // Remove the connection Object from the thread-safe collection
             Connection conn;
-            OnlineConnections.TryRemove(aContext.ClientAddress.ToString(), out conn);
-            ConnectedUsers.Remove(aContext.ClientAddress.ToString());
-            var room = conn.CurrentRoom;
-            if (room != null)
+            if (OnlineConnections.TryRemove(aContext.ClientAddress.ToString(), out conn))
             {
-                room.RemoveClient(conn);
-            }
+                ConnectedUsers.Remove(aContext.ClientAddress.ToString());
+                var room = conn.CurrentRoom;
+                if (room != null)
+                {
+                    room.RemoveClient(conn);
+                }
 
-            matchmaker.RemoveUserFromQueue(GetConnection(aContext));
+                matchmaker.RemoveUserFromQueue(conn);
+            }
         }
 
         internal void Stop()
@@ -315,8 +321,16 @@ namespace IronStrife.ChatServer
         }
         internal Connection GetConnectionByUsername(string username)
         {
-            var user = OnlineConnections.Single((c) => c.Value.username == username);
-            return user.Value;
+            try
+            {
+                var user = OnlineConnections.Single((c) => c.Value.username == username);
+                return user.Value;
+            }
+            catch (Exception)
+            {
+                AddToConsoleLog("There are multiple users with the username '" + username + "'");
+                return null;
+            }
         }
 
         internal void SubmitCommand(ChatCommand com)
@@ -359,6 +373,10 @@ namespace IronStrife.ChatServer
         /// The current matchmaking party this user is a member of.
         /// </summary>
         public Party party;
+        /// <summary>
+        /// The matchmaking skill rating associated with this connection.
+        /// </summary>
+        public int skillRating;
 
         public ChatRoom CurrentRoom { get; set; }
 

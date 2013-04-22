@@ -22,6 +22,7 @@ namespace IronStrife.ChatServer
             this.usersInParty.Add(connection);
             if (connection.party != null)
                 connection.party.usersInParty.Remove(connection); // Remove user from old party, if he was in one
+            connection.party = this;
             this.usersInParty.Add(connection);
             connection.SendMessage(ChatMessage.PartyChangedMessage());
             // Notify new member of all users in party.

@@ -13,14 +13,20 @@ namespace IronStrife.Matchmaking
     {
         private List<MatchmakingEntity> usersInQueue = new List<MatchmakingEntity>();
         public int TotalQueuedUsers { get { return usersInQueue.Sum(entity => entity.NumberOfUsers); } }
+        StrifeMasterServer masterServer;
+        Timer timer;
 
-        public Matchmaker()
+        public Matchmaker(StrifeMasterServer masterServer)
         {
-            new Timer(timerCallback, null, new TimeSpan(), new TimeSpan(0, 0, 5));
+            timer = new Timer(timerCallback, null, new TimeSpan(), new TimeSpan(0, 0, 5));
+            this.masterServer = masterServer;
+            if (masterServer == null)
+            Debug.WriteLine("Master server is null." + masterServer);
         }
 
         private void timerCallback(object state)
         {
+            Debug.WriteLine("Automatic matchmaking running now.");
             TryFindMatch();
         }
 
@@ -35,10 +41,12 @@ namespace IronStrife.Matchmaking
 
             if (connection.party != null)
             {
+                Debug.WriteLine(connection.username + " is in a party. His party is being added to the matchmaking queue.");
                 AddPartyToQueue(connection.party);
             }
             else
             {
+                Debug.WriteLine(connection.username + " is not in a party. Removing him from the solo queue.");
                 var entity = new SoloPlayer(connection);
                 usersInQueue.Add(entity);
             }
@@ -60,15 +68,19 @@ namespace IronStrife.Matchmaking
 
         public void RemoveUserFromQueue(Connection connection)
         {
+            if (connection == null) return;
             if (connection.party != null)
             {
+                Debug.WriteLine(connection.username + " is in a party. His party is being removed from the queue.");
                 RemovePartyFromQueue(connection.party);
             }
-
-            SoloPlayer entity = GetSoloPlayer(usersInQueue, connection);
-            if (entity != null)
+            else
             {
-                usersInQueue.Remove(entity);
+                SoloPlayer entity = GetSoloPlayer(usersInQueue, connection);
+                if (entity != null)
+                {
+                    usersInQueue.Remove(entity);
+                }
             }
         }
         public void RemovePartyFromQueue(Party party)
@@ -116,17 +128,55 @@ namespace IronStrife.Matchmaking
         {
             Console.WriteLine("Trying to find a match.");
             if (TotalQueuedUsers >= 2)
-                MakeMatch(new List<MatchmakingEntity>(usersInQueue));
+                LaunchNewServerWithMatchup(new List<MatchmakingEntity>(usersInQueue));
+            var listCopy = new List<MatchmakingEntity>(usersInQueue);
+            foreach (MatchmakingEntity entity in listCopy)
+            {
+                var server = TryFindExistingServer(entity, entity.skillThreshold);
+                if (server != null)
+                {
+                    ConnectUsersToGame(entity, server, -1);
+                }
+            }
 
             usersInQueue.ForEach((m) => m.IncrementSkillThreshold(5));
         }
 
-        private void MakeMatch(List<MatchmakingEntity> users)
+        private void ConnectUsersToGame(MatchmakingEntity entity, ServerInfo server, int teamNumber)
+        {
+            entity.SendMessage(ChatMessage.MatchFoundMessage(server, teamNumber));
+            RemoveEntityFromQueue(entity);
+        }
+
+        private ServerInfo TryFindExistingServer(MatchmakingEntity entity, int threshold)
+        {
+            Debug.WriteLine("Trying to find existing server for " + entity.ToString() + " which has skill rating " + entity.SkillRating + " with a threshold of " + threshold);
+            foreach (ServerInfo server in masterServer.Servers)
+            {
+                Debug.WriteLine("SERVER: " + server.ToString());
+                Debug.WriteLine("expression evaluates to " + (Math.Abs(server.averageSkillRating - entity.SkillRating) <= threshold));
+                if (server.numConnectedPlayers + entity.NumberOfUsers <= server.maxPlayers)
+                {
+
+                    if (Math.Abs(server.averageSkillRating - entity.SkillRating) <= threshold)
+                    {
+                        return server;
+                    }
+                }
+                else
+                    Debug.WriteLine("server has too many people.");
+
+            }
+            return null;
+        }
+
+        private void LaunchNewServerWithMatchup(List<MatchmakingEntity> users)
         {
             var server = Launcher.LaunchServer();
+            int team = 1;
             foreach (MatchmakingEntity entity in users)
             {
-                entity.SendMessage(ChatMessage.MatchFoundMessage(server, 1));
+                entity.SendMessage(ChatMessage.MatchFoundMessage(server, (++team % 2) + 1));
                 RemoveEntityFromQueue(entity);
             }
         }
