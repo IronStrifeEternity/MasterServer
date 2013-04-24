@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IronStrifeMasterServer", "WpfApplication1\IronStrifeMasterServer.csproj", "{027B7A0D-0E3B-4536-875C-EB88ED6F69C7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchmakingTester", "MatchmakingTester\MatchmakingTester.csproj", "{49F1A0BE-8DB8-4985-925F-88BB9F26ACA1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{027B7A0D-0E3B-4536-875C-EB88ED6F69C7} = {027B7A0D-0E3B-4536-875C-EB88ED6F69C7}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +18,10 @@ Global
 		{027B7A0D-0E3B-4536-875C-EB88ED6F69C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{027B7A0D-0E3B-4536-875C-EB88ED6F69C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{027B7A0D-0E3B-4536-875C-EB88ED6F69C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49F1A0BE-8DB8-4985-925F-88BB9F26ACA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49F1A0BE-8DB8-4985-925F-88BB9F26ACA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49F1A0BE-8DB8-4985-925F-88BB9F26ACA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49F1A0BE-8DB8-4985-925F-88BB9F26ACA1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

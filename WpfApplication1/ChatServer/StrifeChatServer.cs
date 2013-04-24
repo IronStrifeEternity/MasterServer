@@ -252,9 +252,12 @@ namespace IronStrife.ChatServer
 
         private void BroadcastChatMessageToRoom(string username, int userid, string message, ChatRoom room)
         {
-            foreach (Connection c in room.ClientsInRoom)
+            if (room != null)
             {
-                c.SendMessage(ChatMessage.ChatFormat(username, userid, message));
+                foreach (Connection c in room.ClientsInRoom)
+                {
+                    c.SendMessage(ChatMessage.ChatFormat(username, userid, message));
+                }
             }
         }
 
@@ -382,7 +385,10 @@ namespace IronStrife.ChatServer
 
         public void SendMessage(string message)
         {
-            Context.Send(message);
+            if (Context != null)
+                Context.Send(message);
+            else
+                Console.WriteLine(message);
         }
         /// <summary>
         /// Forces a disconnect on this user for the given reason.

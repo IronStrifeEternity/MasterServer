@@ -11,7 +11,7 @@ namespace IronStrife.Matchmaking
 {
     public class Matchmaker
     {
-        private List<MatchmakingEntity> usersInQueue = new List<MatchmakingEntity>();
+        SortedSet<MatchmakingEntity> usersInQueue = new SortedSet<MatchmakingEntity>();
         public int TotalQueuedUsers { get { return usersInQueue.Sum(entity => entity.NumberOfUsers); } }
         StrifeMasterServer masterServer;
         Timer timer;
@@ -92,7 +92,7 @@ namespace IronStrife.Matchmaking
             }
         }
 
-        public static SoloPlayer GetSoloPlayer(List<MatchmakingEntity> entities, Connection connection)
+        public static SoloPlayer GetSoloPlayer(SortedSet<MatchmakingEntity> entities, Connection connection)
         {
             foreach (SoloPlayer soloPlayer in entities)
             {
@@ -103,7 +103,7 @@ namespace IronStrife.Matchmaking
             }
             return null;
         }
-        public static MatchmakingParty GetParty(List<MatchmakingEntity> entities, Party party)
+        public static MatchmakingParty GetParty(SortedSet<MatchmakingEntity> entities, Party party)
         {
             foreach (MatchmakingParty matchmakingParty in entities)
             {
@@ -138,8 +138,10 @@ namespace IronStrife.Matchmaking
                     ConnectUsersToGame(entity, server, -1);
                 }
             }
-
-            usersInQueue.ForEach((m) => m.IncrementSkillThreshold(5));
+            foreach (MatchmakingEntity m in usersInQueue)
+            {
+                m.IncrementSkillThreshold(5);
+            }
         }
 
         private void ConnectUsersToGame(MatchmakingEntity entity, ServerInfo server, int teamNumber)

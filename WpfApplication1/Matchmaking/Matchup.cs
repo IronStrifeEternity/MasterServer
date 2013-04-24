@@ -11,6 +11,15 @@ namespace IronStrife.Matchmaking
         public List<MatchmakingEntity> teamOne = new List<MatchmakingEntity>();
         public List<MatchmakingEntity> teamTwo = new List<MatchmakingEntity>();
 
+        private bool IsTeamOneSmaller { get { return teamOne.Count < teamTwo.Count; } }
+
+        private int teamSize;
+
+        public Matchup(int numPlayers)
+        {
+            this.teamSize = numPlayers;
+        }
+
         public void AddToTeamOne(MatchmakingEntity entity)
         {
             if (!teamOne.Contains(entity))
@@ -25,17 +34,60 @@ namespace IronStrife.Matchmaking
 
         public bool IsMatchupBalanced(int skillThreshold)
         {
-            if (teamOne.Sum(t => t.NumberOfUsers) == teamTwo.Sum(t => t.NumberOfUsers))
+            return AreTeamSkillsWithinThreshold(skillThreshold);
+        }
+
+        private bool AreTeamSkillsWithinThreshold(int skillThreshold)
+        {
+
+            var teamOneSkill = teamOne.Sum(t => t.SkillRating);
+            var teamTwoSkill = teamTwo.Sum(t => t.SkillRating);
+            Console.WriteLine("Team one has " + teamOneSkill + " skill rating and Team two has " + teamTwoSkill);
+            if ((teamOneSkill - teamTwoSkill) <= skillThreshold)
             {
-                var teamOneSkill = teamOne.Sum(t => t.SkillRating);
-                var teamTwoSkill = teamTwo.Sum(t => t.SkillRating);
-                Console.WriteLine("Team one has " + teamOneSkill + " skill rating and Team two has " + teamTwoSkill);
-                if ((teamOneSkill - teamTwoSkill) <= skillThreshold)
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool TryAdd(MatchmakingEntity entity)
+        {
+            if (IsTeamOneSmaller)
+            {
+                if (teamOne.Count + entity.NumberOfUsers <= this.teamSize)
                 {
+                    teamOne.Add(entity);
+                    return true;
+                }
+            }
+            else
+            {
+                if (teamTwo.Count + entity.NumberOfUsers <= this.teamSize)
+                {
+                    teamTwo.Add(entity);
                     return true;
                 }
             }
             return false;
+        }
+
+        public bool TeamsFull { get { return (teamOne.Count == teamSize && teamTwo.Count == teamSize); } }
+
+        public override string ToString()
+        {
+            var s = new StringBuilder("Matchup:\n---------------\n\n");
+            s.Append("Team One: "); s.AppendLine(teamOne.Sum(e => e.SkillRating).ToString());
+            teamOne.ForEach(e => s.AppendLine(e.ToString()));
+            s.AppendLine();
+            s.Append("Team Two: "); s.AppendLine(teamTwo.Sum(e => e.SkillRating).ToString());
+            teamTwo.ForEach(e => s.AppendLine(e.ToString()));
+            return s.ToString();
+        }
+
+        public void OptimizeTeams()
+        {
+            
         }
     }
 }
