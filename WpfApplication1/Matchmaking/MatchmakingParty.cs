@@ -26,5 +26,10 @@
         {
             get { return party.Users.Sum((u) => u.skillRating) / party.Users.Count; }
         }
+
+        public override int TotalSkillRating
+        {
+            get { return SkillRating * NumberOfUsers; }
+        }
     }
 }

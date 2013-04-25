@@ -23,5 +23,7 @@ namespace IronStrife.Matchmaking
             else
                 return 1;
         }
+
+        public abstract int TotalSkillRating { get;}
     }
 }

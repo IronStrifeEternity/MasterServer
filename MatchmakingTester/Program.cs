@@ -18,18 +18,25 @@ namespace MatchmakingTester
             matchmaker.Add(new FakeSoloPlayer("Jonny", 100));
             matchmaker.Add(new FakeSoloPlayer("Jamie", 110));
             matchmaker.Add(new FakeSoloPlayer("Drake", 120));
-            matchmaker.Add(new FakeSoloPlayer("Blaine", 90));
-            matchmaker.Add(new FakeParty(2, 150));
-            matchmaker.Add(new FakeSoloPlayer("Paul", 125));
-            matchmaker.Add(new FakeParty(3, 120));
-            matchmaker.Add(new FakeParty(4, 100));
-            matchmaker.Add(new FakeParty(2, 90));
-            matchmaker.Add(new FakeParty(2, 80));
+            matchmaker.Add(new FakeSoloPlayer("Delila", 140));
+            matchmaker.Add(new FakeSoloPlayer("Damien", 140));
+            matchmaker.Add(new FakeSoloPlayer("Darcey", 140));
+            matchmaker.Add(new FakeSoloPlayer("Jacob", 140));
+            matchmaker.Add(new FakeSoloPlayer("Elmer", 140));
             matchmaker.Add(new FakeSoloPlayer("Elayne", 150));
             matchmaker.Add(new FakeSoloPlayer("Delila", 140));
             matchmaker.Add(new FakeSoloPlayer("Samuel", 60));
             matchmaker.Add(new FakeSoloPlayer("Cynthia", 75));
             matchmaker.Add(new FakeSoloPlayer("Dale", 200));
+            matchmaker.Add(new FakeSoloPlayer("Dale", 200));
+
+            matchmaker.Add(new FakeParty(2, 105));
+            matchmaker.Add(new FakeParty(2, 150));
+            matchmaker.Add(new FakeParty(3, 120));
+            matchmaker.Add(new FakeParty(4, 100));
+            matchmaker.Add(new FakeParty(2, 90));
+            matchmaker.Add(new FakeParty(2, 80));
+
             matchmaker.TryMakeMatch(150, 7);
             Console.Read();
         }
@@ -45,10 +52,10 @@ namespace MatchmakingTester
             Console.WriteLine("Initial Players (" + usersInQueue.Count + ") :");
             usersInQueue.ToList().ForEach(u => Console.WriteLine(u.ToString()));
             Console.WriteLine("---------------\n");
-            Matchup matchup = this.FindMatchupFromIndex(0, teamSize, skillThreshold);
+            Matchup matchup = FindMatchupFromIndex(usersInQueue, 0, teamSize, skillThreshold);
         }
 
-        private Matchup FindMatchupFromIndex(int index, int teamSize, int skillThreshold)
+        private static Matchup FindMatchupFromIndex(List<MatchmakingEntity> usersInQueue, int index, int teamSize, int skillThreshold)
         {
             if (index >= usersInQueue.Count) { return null; }
             var baseIndex = index;
@@ -70,7 +77,7 @@ namespace MatchmakingTester
             }
             if (matchup == null)
             {
-                return FindMatchupFromIndex(baseIndex + 1, teamSize, skillThreshold);
+                return FindMatchupFromIndex(usersInQueue, baseIndex + 1, teamSize, skillThreshold);
             }
             else
             {
@@ -80,7 +87,7 @@ namespace MatchmakingTester
                 {
                     return matchup;
                 }
-                else return FindMatchupFromIndex(baseIndex + 1, teamSize, skillThreshold);
+                else return FindMatchupFromIndex(usersInQueue, baseIndex + 1, teamSize, skillThreshold);
             }
         }
     }
@@ -107,7 +114,12 @@ namespace MatchmakingTester
 
         public override string ToString()
         {
-            return "Party[" + NumberOfUsers + "] <" + SkillRating + ">";
+            return "Party[" + NumberOfUsers + "] <" + TotalSkillRating + ">";
+        }
+
+        public override int TotalSkillRating
+        {
+            get { return SkillRating * NumberOfUsers; }
         }
     }
 
@@ -126,7 +138,7 @@ namespace MatchmakingTester
         private string username;
         public override string ToString()
         {
-            return username + " <" + SkillRating + ">";
+            return username + " <" + TotalSkillRating + ">";
         }
         private int skillRating;
         public override int SkillRating
@@ -134,6 +146,11 @@ namespace MatchmakingTester
             get { return skillRating; }
         }
         public FakeSoloPlayer(string username, int skillRating) { this.skillRating = skillRating; this.username = username; }
+
+        public override int TotalSkillRating
+        {
+            get { return SkillRating; }
+        }
     }
 
 

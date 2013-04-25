@@ -26,5 +26,10 @@
         {
             get { return connection.skillRating; }
         }
+
+        public override int TotalSkillRating
+        {
+            get { return SkillRating; }
+        }
     }
 }
