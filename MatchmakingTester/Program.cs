@@ -52,43 +52,7 @@ namespace MatchmakingTester
             Console.WriteLine("Initial Players (" + usersInQueue.Count + ") :");
             usersInQueue.ToList().ForEach(u => Console.WriteLine(u.ToString()));
             Console.WriteLine("---------------\n");
-            Matchup matchup = FindMatchupFromIndex(usersInQueue, 0, teamSize, skillThreshold);
-        }
-
-        private static Matchup FindMatchupFromIndex(List<MatchmakingEntity> usersInQueue, int index, int teamSize, int skillThreshold)
-        {
-            if (index >= usersInQueue.Count) { return null; }
-            var baseIndex = index;
-            var matchup = new Matchup(teamSize);
-            bool finished = false;
-            while (!finished)
-            {
-                if (index >= usersInQueue.Count)
-                {
-                    matchup = null; break;
-                }
-                var entity = usersInQueue[index];
-                matchup.TryAdd(entity);
-                if (matchup.TeamsFull)
-                {
-                    finished = true;
-                }
-                index++;
-            }
-            if (matchup == null)
-            {
-                return FindMatchupFromIndex(usersInQueue, baseIndex + 1, teamSize, skillThreshold);
-            }
-            else
-            {
-                Console.WriteLine("Matchup found: " + matchup.ToString());
-                matchup.OptimizeTeams();
-                if (matchup.IsMatchupBalanced(skillThreshold))
-                {
-                    return matchup;
-                }
-                else return FindMatchupFromIndex(usersInQueue, baseIndex + 1, teamSize, skillThreshold);
-            }
+            Matchup matchup = Matchmaker.FindMatchupFromIndex(usersInQueue, 0, teamSize, skillThreshold);
         }
     }
 
