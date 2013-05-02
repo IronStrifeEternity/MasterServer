@@ -94,22 +94,22 @@ namespace IronStrife.Matchmaking
 
         public static SoloPlayer GetSoloPlayer(SortedSet<MatchmakingEntity> entities, Connection connection)
         {
-            foreach (SoloPlayer soloPlayer in entities)
+            foreach (MatchmakingEntity entity in entities)
             {
-                if (soloPlayer.connection == connection)
+                if (entity is SoloPlayer && ((SoloPlayer)entity).connection == connection)
                 {
-                    return soloPlayer;
+                    return (SoloPlayer)entity;
                 }
             }
             return null;
         }
         public static MatchmakingParty GetParty(SortedSet<MatchmakingEntity> entities, Party party)
         {
-            foreach (MatchmakingParty matchmakingParty in entities)
+            foreach (MatchmakingEntity entity in entities)
             {
-                if (matchmakingParty.party == party)
+                if (entity is MatchmakingParty && ((MatchmakingParty)entity).party == party)
                 {
-                    return matchmakingParty;
+                    return (MatchmakingParty)entity;
                 }
             }
             return null;
